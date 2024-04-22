@@ -64,6 +64,7 @@ func New(name string, options ...Option) (*Service, error) {
 		GinEngine:      r,
 		AppHealthz:     false,
 		AppReadyz:      false,
+		Version:        1,
 		exitAppChan:    exitChan,
 		intHealthProbe: false,
 		intReadyProbe:  false,
@@ -75,7 +76,6 @@ func New(name string, options ...Option) (*Service, error) {
 
 	//TODO: For now we default to version 1
 	if svc.Version == 0 {
-		svc.Version = 1
 	}
 
 	return svc, nil
