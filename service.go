@@ -88,9 +88,11 @@ func Start(svc *Service) {
 	var wg sync.WaitGroup
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%d", svc.Port), //":8080",
 		Handler: svc.GinEngine,
 	}
+
+	fmt.Println("- - Server Detail => ", srv.Addr)
 
 	setupInternalRoutes(svc)
 
