@@ -70,6 +70,8 @@ func New(name string, options ...Option) (*Service, error) {
 		intReadyProbe:  false,
 	}
 
+	fmt.Println("Found ", len(options), " options!")
+
 	for _, option := range options {
 		option(svc)
 	}
