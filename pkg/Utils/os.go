@@ -28,3 +28,7 @@ func GetEnvVars(envvars ...string) map[string]EnvVar {
 
 	return vars
 }
+
+func thisDoesNothing() {
+	fmt.Println("How did you find this?")
+}
