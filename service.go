@@ -3,6 +3,7 @@ package servicebase
 import (
 	"context"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -34,6 +35,12 @@ func WithVersion(version int) Option {
 	}
 }
 
+func WithCORS(enable bool) Option {
+	return func(svc *Service) {
+		svc.CORSEnabled = enable
+	}
+}
+
 type Service struct {
 	//public
 	Name        string          `json:"Name"`
@@ -44,6 +51,7 @@ type Service struct {
 	AppHealthz  bool            `json:"AppHealthz"`
 	AppReadyz   bool            `json:"AppReadyz"`
 	Version     int             `json:"Version"`
+	CORSEnabled bool            `json:"CorsEnabled"`
 	//private
 	exitAppChan    chan struct{} `json:"-"`
 	intHealthProbe bool
@@ -65,6 +73,7 @@ func New(name string, options ...Option) (*Service, error) {
 		AppHealthz:     false,
 		AppReadyz:      false,
 		Version:        1,
+		CORSEnabled:    false,
 		exitAppChan:    exitChan,
 		intHealthProbe: false,
 		intReadyProbe:  false,
@@ -74,6 +83,17 @@ func New(name string, options ...Option) (*Service, error) {
 
 	for _, option := range options {
 		option(svc)
+	}
+
+	if svc.CORSEnabled {
+		r.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"*"}, // Change "*" to your specific origin if needed
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Content-Type", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
 	}
 
 	//TODO: For now we default to version 1
